@@ -18,6 +18,7 @@ class BoardDAO:
             charset="utf8mb4" # 
         )
 
+
     def select_all(self):
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -34,3 +35,13 @@ class BoardDAO:
         conn.close()
 
         return result
+    # def insult(self):
+    
+    #     sql=="""
+    #     insult 
+    #     """
+    # def select_content(self):
+    #     Select content from board
+
+    #     print(board[2])
+    # def delete(self):

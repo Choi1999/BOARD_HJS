@@ -21,7 +21,8 @@ while True:
                   board[3],
                   board[4])
     elif menu==("2"):
-        pass
+      pass
+      # insults=board_dao.insult()
     elif menu==("3"):
         pass
     elif menu==("4"):
