@@ -27,6 +27,8 @@ function formatDate(s: string) {
 function BoardListPage() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
+  const [keyword, setKeyword] = useState("");
+  const [searchType, setSearchType] = useState<"title" | "content" | "author">("title");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -59,6 +61,14 @@ function BoardListPage() {
     }
     navigate({ to: "/boards/new" });
   };
+  const kw = keyword.trim().toLowerCase();
+  const filtered = kw
+    ? boards.filter((b) => {
+        if (searchType === "title") return b.title.toLowerCase().includes(kw);
+        if (searchType === "content") return (b.content ?? "").toLowerCase().includes(kw);
+        return String(b.member_id).includes(kw);
+      })
+    : boards;
 
   return (
     <div className="space-y-4">
@@ -73,18 +83,46 @@ function BoardListPage() {
           글쓰기
         </button>
       </div>
+ <div className="flex flex-col gap-2 sm:flex-row">
+        <select
+          value={searchType}
+          onChange={(e) => setSearchType(e.target.value as "title" | "content" | "author")}
+          className="rounded-md border bg-background px-3 py-2 text-sm"
+        >
+          <option value="title">제목</option>
+          <option value="content">내용</option>
+          <option value="author">작성자 ID</option>
+        </select>
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="검색어를 입력하세요"
+          className="flex-1 rounded-md border bg-background px-3 py-2 text-sm"
+        />
+        {keyword && (
+          <button
+            onClick={() => setKeyword("")}
+            className="rounded-md border px-3 py-2 text-sm hover:bg-accent"
+          >
+            초기화
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
           불러오는 중...
         </div>
-      ) : boards.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-          게시글이 없습니다.
+                  {kw ? "검색 결과가 없습니다." : "게시글이 없습니다."}
         </div>
       ) : (
+                <>
+        <div className="text-xs text-muted-foreground">총 {filtered.length}건</div>
         <ul className="space-y-3">
-          {boards.map((b) => (
+          {filtered.map((b) => (
             <li key={b.id}>
               <Link
                 to="/boards/$boardId"
@@ -103,6 +141,7 @@ function BoardListPage() {
             </li>
           ))}
         </ul>
+        </>
       )}
     </div>
   );
