@@ -46,14 +46,11 @@ def login(
         request: MemberLoginRequest,
         db: Session = Depends(get_db)
 ):
-    try:
-        return service.login(
-            db,
-            request.username,
-            request.password
-        )
-    except Exception as e:
-        raise HTTPException(401, str(e))
+    return service.login(
+        db,
+        request.username,
+        request.password
+    )
 
 
 @router.get("", response_model=list[MemberResponse])

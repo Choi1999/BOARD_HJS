@@ -2,7 +2,13 @@ from datetime import datetime
 
 from backend.repositories.board_repository import BoardRepository
 from backend.models.board import Board
+from backend.exceptions.error_code import (
+    ErrorCode
+)
 
+from backend.exceptions.custom_exception import (
+    CustomException
+)
 
 class BoardService:
 
@@ -40,8 +46,9 @@ class BoardService:
         board = self.board_repository.find_by_id(db, board_id)
 
         if not board:
-            raise Exception("게시글이 존재하지 않습니다.")
-
+            raise CustomException(
+                ErrorCode.BOARD_NOT_FOUND
+            )
         board.title = title
         board.content = content
         board.updated_at = datetime.now()

@@ -3,7 +3,13 @@ from datetime import datetime
 
 from backend.repositories.member_repository import MemberRepository
 from backend.models.member import Member
+from backend.exceptions.error_code import (
+    ErrorCode
+)
 
+from backend.exceptions.custom_exception import (
+    CustomException
+)
 
 class MemberService:
 
@@ -19,8 +25,9 @@ class MemberService:
         existing = self.member_repository.find_by_username(db, username)
 
         if existing:
-            raise Exception("이미 존재하는 사용자입니다.")
-
+            raise CustomException(
+                ErrorCode.DUPLICATE_USERNAME
+            )
         # 2. 비밀번호 암호화
         hashed_pw = bcrypt.hashpw(
             password.encode("utf-8"),
@@ -49,7 +56,9 @@ class MemberService:
         member = self.member_repository.find_by_username(db, username)
 
         if not member:
-            raise Exception("존재하지 않는 사용자입니다.")
+            raise CustomException(
+                ErrorCode.MEMBER_NOT_FOUND
+            )
 
         if member.is_deleted:
             raise Exception("탈퇴한 사용자입니다.")
@@ -59,7 +68,9 @@ class MemberService:
             password.encode("utf-8"),
             member.password.encode("utf-8")
         ):
-            raise Exception("비밀번호가 올바르지 않습니다.")
+            raise CustomException(
+                ErrorCode.INVALID_PASSWORD
+            )
 
         return member
 

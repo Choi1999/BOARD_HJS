@@ -2,7 +2,13 @@ from datetime import datetime
 
 from backend.repositories.comment_repository import CommentRepository
 from backend.models.comment import Comment
+from backend.exceptions.error_code import (
+    ErrorCode
+)
 
+from backend.exceptions.custom_exception import (
+    CustomException
+)
 
 class CommentService:
 
@@ -30,6 +36,7 @@ class CommentService:
         comment = self.comment_repository.find_by_id(db, comment_id)
 
         if not comment:
-            raise Exception("댓글이 존재하지 않습니다.")
-
+            raise CustomException(
+                ErrorCode.COMMENT_NOT_FOUND
+            )   
         return self.comment_repository.delete(db, comment)
